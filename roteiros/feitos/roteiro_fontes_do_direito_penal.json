@@ -1,0 +1,40 @@
+{
+  "roteiro_falado": "Você sabe quem pode criar um crime no Brasil? Cuidado, isso despenca em prova! As fontes do Direito Penal se dividem em materiais e formais. A fonte material, ou seja, quem tem competência para criar normas penais, é exclusivamente a União! Já a fonte formal imediata é a lei em sentido estrito: leis ordinárias e complementares. Atenção máxima: Medidas Provisórias, Decretos e Resoluções NUNCA podem criar crimes ou aumentar penas! E os costumes? Também NÃO criam crimes! Decorou? Salva esse vídeo pra não errar na prova!",
+  "palavras_chave": [
+    {
+      "texto": "DESPENCA EM PROVA",
+      "inicio_porcentagem": 0.08,
+      "fim_porcentagem": 0.16
+    },
+    {
+      "texto": "FONTES DO DIREITO",
+      "inicio_porcentagem": 0.18,
+      "fim_porcentagem": 0.28
+    },
+    {
+      "texto": "EXCLUSIVAMENTE A UNIÃO",
+      "inicio_porcentagem": 0.32,
+      "fim_porcentagem": 0.42
+    },
+    {
+      "texto": "APENAS LEI ESTRITA",
+      "inicio_porcentagem": 0.46,
+      "fim_porcentagem": 0.56
+    },
+    {
+      "texto": "NUNCA CRIAM CRIMES",
+      "inicio_porcentagem": 0.62,
+      "fim_porcentagem": 0.74
+    },
+    {
+      "texto": "COSTUMES NÃO CRIAM",
+      "inicio_porcentagem": 0.78,
+      "fim_porcentagem": 0.88
+    },
+    {
+      "texto": "SALVA PRA REVISAR",
+      "inicio_porcentagem": 0.9,
+      "fim_porcentagem": 0.98
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "roteiro_falado": "Você sabia que o brasileiro naturalizado pode sim ser extraditado, mas apenas em duas hipóteses? Se liga pra não cair na pegadinha da banca! O brasileiro nato nunca é extraditado, sem exceção. Já o naturalizado pode ser extraditado em duas situações: primeira, se cometeu um crime comum antes da naturalização. Segunda, por envolvimento com o tráfico de drogas, a qualquer tempo, ou seja, antes ou depois de se naturalizar! Salva esse vídeo pra revisar o Artigo quinto da Constituição antes da sua prova!",
+  "palavras_chave": [
+    {
+      "texto": "NATURALIZADO PODE",
+      "inicio_porcentagem": 0.03,
+      "fim_porcentagem": 0.15
+    },
+    {
+      "texto": "NATO NUNCA",
+      "inicio_porcentagem": 0.2,
+      "fim_porcentagem": 0.32
+    },
+    {
+      "texto": "CRIME COMUM ANTES",
+      "inicio_porcentagem": 0.42,
+      "fim_porcentagem": 0.58
+    },
+    {
+      "texto": "TRÁFICO DE DROGAS",
+      "inicio_porcentagem": 0.62,
+      "fim_porcentagem": 0.75
+    },
+    {
+      "texto": "A QUALQUER TEMPO",
+      "inicio_porcentagem": 0.76,
+      "fim_porcentagem": 0.88
+    },
+    {
+      "texto": "ARTIGO QUINTO CF",
+      "inicio_porcentagem": 0.89,
+      "fim_porcentagem": 0.98
+    }
+  ]
+}
