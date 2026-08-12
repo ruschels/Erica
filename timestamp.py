@@ -16,13 +16,14 @@ from pypdf import PdfReader
 from google import genai
 from google.genai import types
 import requests
+import gc
 
 # ==========================================
 # CONFIGURAÇÕES E CHAVES DE API
 # ==========================================
-API_GEMINI = st.secrets["API_GEMINI"]
-API_FISH = st.secrets["API_FISH"]
-API_DEEPGRAM = st.secrets["API_DEEPGRAM"]
+API_GEMINI = st.secrets["API_GEMINI"] if "API_GEMINI" in st.secrets else "AQ.Ab8RN6K1lScP9JN2iGJcIKY44kuGxQQTaiOnRJeEgXzhLOSzIw"
+API_FISH = st.secrets["API_FISH"] if "API_FISH" in st.secrets else "2bc700daad0e478cb67da9d7f89dba75"
+API_DEEPGRAM = st.secrets["API_DEEPGRAM"] if "API_DEEPGRAM" in st.secrets else "5d492daf0a6756920b2456119f32ac790af6ede9"
 MODELO_GEMINI = "gemini-flash-latest"
 
 st.set_page_config(page_title="AutoTube Concursos", layout="wide", page_icon="📚")
@@ -277,17 +278,19 @@ def render_keyword_video(script_data, audio_path, output_path, config_visual, de
     video = VideoClip(make_frame, duration=duration)
     video = video.set_audio(audio_clip)
     
+    # Reduzido para threads=2 para evitar crash no Streamlit Cloud
     video.write_videofile(
         output_path, 
         fps=24, 
         codec="libx264", 
         audio_codec="aac",
-        threads=4, 
+        threads=2, 
         preset="ultrafast"
     )
     
     bg_clip.close()
     audio_clip.close()
+    video.close()
     return output_path
 
 # ==========================================
@@ -321,7 +324,9 @@ menu = st.sidebar.radio("Navegação", [
     "✍️ Gerador de Roteiros (Palavras-chave)", 
     "🃏 Gerador de Flashcards",
     "🎬 Renderizador Individual",
-    "🏭 Renderização em Massa"
+    "🏭 Renderização em Massa",
+    "📥 Meus Vídeos (Output)",
+    "💾 Backup e Restauração"
 ])
 
 if menu == "📖 Base de Conhecimento":
@@ -605,7 +610,6 @@ elif menu == "🃏 Gerador de Flashcards":
         else:
             topico_selecionado = st.selectbox("Qual Assunto?", topicos)
             
-            # Dicionário com os 4 estilos padrão
             estilos_flashcard = {
                 "Direto ao Ponto (Conceito e Definição)": "Foco em perguntas diretas perguntando 'O que é...', 'Quais os requisitos...', etc. Respostas curtas e objetivas.",
                 "Verdadeiro ou Falso (Estilo Cebraspe)": "Crie afirmações que podem ser verdadeiras ou falsas. A resposta deve dizer se é Verdadeiro ou Falso e explicar brevemente o porquê.",
@@ -648,7 +652,6 @@ elif menu == "🃏 Gerador de Flashcards":
                         
                         st.success("Flashcards gerados com sucesso! Passe o mouse sobre os cartões para virar.")
                         
-                        # --- ESTILIZAÇÃO CSS 3D PARA OS FLASHCARDS ---
                         st.markdown("""
                         <style>
                         .flashcard-grid {
@@ -719,11 +722,9 @@ elif menu == "🃏 Gerador de Flashcards":
                         </style>
                         """, unsafe_allow_html=True)
                         
-                        # Inicia o grid dos flashcards
                         st.markdown('<div class="flashcard-grid">', unsafe_allow_html=True)
                         
                         for i, card in enumerate(flashcards_json, 1):
-                            # Troca quebras de linha por <br> para o HTML entender
                             frente = card.get('frente', '').replace('\n', '<br>')
                             verso = card.get('verso', '').replace('\n', '<br>')
                             
@@ -743,10 +744,8 @@ elif menu == "🃏 Gerador de Flashcards":
                             """
                             st.markdown(html_card, unsafe_allow_html=True)
                             
-                        # Fecha o grid
                         st.markdown('</div>', unsafe_allow_html=True)
                                 
-                        # Permite baixar o JSON dos flashcards para importar em apps como Anki
                         json_string = json.dumps(flashcards_json, ensure_ascii=False, indent=2)
                         st.download_button(
                             label="📥 Baixar Flashcards (JSON) para Anki",
@@ -761,9 +760,6 @@ elif menu == "🃏 Gerador de Flashcards":
 elif menu in ["🎬 Renderizador Individual", "🏭 Renderização em Massa"]:
     st.header(menu)
     
-    # ==========================================
-    # SELETOR DE VOZES 
-    # ==========================================
     st.subheader("🎙️ Configuração de Áudio")
     vozes_disponiveis = {
         "Voz da Erica": "7f63edf2ac5f4e538992b065f5a20ce6",
@@ -797,7 +793,6 @@ elif menu in ["🎬 Renderizador Individual", "🏭 Renderização em Massa"]:
                     st.info(f"Gerando áudio via Fish Audio TTS ({voz_selecionada})...")
                     audio_path = os.path.join("output", roteiro_file.replace('.json', '.mp3'))
                     
-                    # Passando o ID da voz selecionada para a função
                     caminho_gerado, erro = gerar_audio_fishaudio(
                         texto=dados['roteiro_falado'],
                         dicionario_global=dicionario_global,
@@ -825,5 +820,61 @@ elif menu in ["🎬 Renderizador Individual", "🏭 Renderização em Massa"]:
                             st.success(f"🎉 Vídeo gerado com sucesso: {video_path}")
                         except Exception as e:
                             st.error(f"Erro durante a renderização: {e}")
+                            
+                        # Limpeza de memória
+                        gc.collect()
                     else:
                         st.error(f"❌ Falha no Fish Audio: {erro}")
+
+elif menu == "📥 Meus Vídeos (Output)":
+    st.header("📥 Galeria de Vídeos Gerados")
+    st.markdown("Aqui você pode visualizar e baixar os vídeos que já foram renderizados com sucesso.")
+    
+    videos = [f for f in os.listdir("output") if f.endswith(".mp4")]
+    
+    if not videos:
+        st.info("Nenhum vídeo foi gerado ainda. Vá na aba de Renderização para criar seu primeiro vídeo!")
+    else:
+        for vid in videos:
+            vid_path = os.path.join("output", vid)
+            with st.expander(f"🎬 {vid}"):
+                st.video(vid_path)
+                with open(vid_path, "rb") as file:
+                    st.download_button(
+                        label="⬇️ Baixar Vídeo",
+                        data=file,
+                        file_name=vid,
+                        mime="video/mp4",
+                        key=f"dl_{vid}"
+                    )
+
+elif menu == "💾 Backup e Restauração":
+    st.header("💾 Gerenciamento de Dados (Backup)")
+    st.markdown("""
+    O servidor na nuvem reinicia de tempos em tempos para liberar memória, o que pode apagar seus dados temporários. 
+    **Faça o download da sua base de dados regularmente.** Caso o app reinicie, basta fazer o upload do arquivo salvo aqui para restaurar tudo!
+    """)
+    
+    st.markdown("---")
+    st.subheader("1. Fazer Backup (Baixar Base Atual)")
+    
+    if os.path.exists("base_conhecimento.json"):
+        with open("base_conhecimento.json", "r", encoding="utf-8") as f:
+            st.download_button(
+                label="⬇️ Baixar base_conhecimento.json",
+                data=f.read(),
+                file_name="base_conhecimento.json",
+                mime="application/json"
+            )
+    else:
+        st.warning("O arquivo base_conhecimento.json ainda não existe ou está vazio.")
+        
+    st.markdown("---")
+    st.subheader("2. Restaurar Backup (Subir Base Antiga)")
+    uploaded_json = st.file_uploader("Faça o upload do seu arquivo base_conhecimento.json salvo", type="json")
+    
+    if uploaded_json is not None:
+        if st.button("Restaurar Base de Conhecimento"):
+            with open("base_conhecimento.json", "wb") as f:
+                f.write(uploaded_json.getbuffer())
+            st.success("✅ Base de conhecimento restaurada com sucesso! Você já pode voltar a gerar roteiros.")
