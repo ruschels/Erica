@@ -20,9 +20,9 @@ import requests
 # ==========================================
 # CONFIGURAÇÕES E CHAVES DE API
 # ==========================================
-API_GEMINI = "AQ.Ab8RN6K1lScP9JN2iGJcIKY44kuGxQQTaiOnRJeEgXzhLOSzIw"
-API_FISH = "2bc700daad0e478cb67da9d7f89dba75"
-API_DEEPGRAM = "5d492daf0a6756920b2456119f32ac790af6ede9"
+API_GEMINI = st.secrets["API_GEMINI"]
+API_FISH = st.secrets["API_FISH"]
+API_DEEPGRAM = st.secrets["API_DEEPGRAM"]
 MODELO_GEMINI = "gemini-flash-latest"
 
 st.set_page_config(page_title="AutoTube Concursos", layout="wide", page_icon="📚")
