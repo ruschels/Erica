@@ -1,0 +1,7 @@
+streamlit
+Pillow
+numpy
+moviepy
+pypdf
+google-genai
+requests
