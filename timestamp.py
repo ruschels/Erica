@@ -196,7 +196,7 @@ def render_keyword_video(script_data, audio_path, output_path, config_visual, de
     for kw in synced_keywords:
         texto = kw['texto'].upper()
         
-        tamanho_fonte = 130
+        tamanho_fonte = config_visual.get('tamanho_fonte', 130)
         try:
             font_kw = ImageFont.truetype(nome_fonte, tamanho_fonte)
         except:
@@ -303,6 +303,7 @@ st.sidebar.markdown("---")
 st.sidebar.header("🎨 Customização Visual")
 fonte_selecionada = st.sidebar.selectbox("Tipografia (Fonte)", ["impact.ttf", "arialbd.ttf", "courbd.ttf", "comic.ttf", "tahoma.ttf", "trebucbd.ttf"])
 estilo_selecionado = st.sidebar.selectbox("Estilo do Design", ["Estilo 1 - Texto Glitch (Vazado)", "Estilo 2 - Caixa Cyber (Contorno)", "Estilo 3 - Bloco Sólido (Invertido)"])
+tamanho_fonte_base = st.sidebar.slider("Tamanho da Fonte", min_value=50, max_value=250, value=130, step=10)
 
 col1, col2 = st.sidebar.columns(2)
 with col1:
@@ -314,7 +315,8 @@ configuracoes_visuais = {
     "fonte": fonte_selecionada,
     "estilo": estilo_selecionado,
     "cor_primaria": cor_primaria,
-    "cor_secundaria": cor_secundaria
+    "cor_secundaria": cor_secundaria,
+    "tamanho_fonte": tamanho_fonte_base
 }
 
 st.sidebar.markdown("---")
