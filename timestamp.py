@@ -759,7 +759,75 @@ elif menu == "🃏 Gerador de Flashcards":
                     except Exception as e:
                         st.error(f"Erro no Gemini: {e}")
 
-elif menu in ["🎬 Renderizador Individual", "🏭 Renderização em Massa"]:
+elif menu == "🎬 Renderizador Individual":
+    st.header(menu)
+    
+    st.subheader("🎙️ Configuração de Áudio")
+    vozes_disponiveis = {
+        "Voz da Erica": "7f63edf2ac5f4e538992b065f5a20ce6",
+        "Voz do Jean": "8d8c7204f55f440abf975500590c3c12",
+        "Voz do Matheus": "8a7a95ba239d4475afcad5dbebb24a48"
+    }
+    
+    voz_selecionada = st.selectbox("Selecione a Voz para a Narração", list(vozes_disponiveis.keys()))
+    voice_id_selecionado = vozes_disponiveis[voz_selecionada]
+    
+    st.markdown("---")
+    
+    roteiros = [f for f in os.listdir("roteiros") if f.endswith('.json')]
+    if not roteiros:
+        st.warning("Nenhum roteiro gerado ainda.")
+    else:
+        roteiro_selecionado = st.selectbox("Selecione o Roteiro para Renderizar", roteiros)
+        
+        if st.button("🚀 Renderizar Vídeo Selecionado"):
+            with st.spinner(f"Renderizando {roteiro_selecionado}..."):
+                caminho_roteiro = os.path.join("roteiros", roteiro_selecionado)
+                with open(caminho_roteiro, 'r', encoding='utf-8') as f:
+                    dados = json.loads(f.read())
+                dicionario_global = {}
+                try:
+                    with open("dicionario_fonetico.json", 'r', encoding='utf-8') as f:
+                        dicionario_global = json.load(f)
+                except: pass
+                    
+                st.info(f"Gerando áudio via Fish Audio TTS ({voz_selecionada})...")
+                audio_path = os.path.join("output", roteiro_selecionado.replace('.json', '.mp3'))
+                
+                caminho_gerado, erro = gerar_audio_fishaudio(
+                    texto=dados['roteiro_falado'],
+                    dicionario_global=dicionario_global,
+                    output_path=audio_path,
+                    api_key=API_FISH,
+                    voice_id=voice_id_selecionado 
+                )
+                
+                if caminho_gerado and os.path.exists(caminho_gerado):
+                    st.info("Sincronizando tempos com Deepgram ASR...")
+                    
+                    deepgram_words, erro_asr = obter_timestamps_deepgram(caminho_gerado, API_DEEPGRAM)
+                    
+                    if erro_asr:
+                        st.warning(f"Falha na API Deepgram. Usando tempos estimados. Motivo: {erro_asr}")
+                    else:
+                        st.success("Palavras mapeadas com sucesso! Aplicando timestamps precisos.")
+
+                    st.info("Aplicando motor visual customizado...")
+                    video_path = os.path.join("output", roteiro_selecionado.replace('.json', '.mp4'))
+                    
+                    try:
+                        render_keyword_video(dados, caminho_gerado, video_path, configuracoes_visuais, deepgram_words)
+                        os.rename(caminho_roteiro, os.path.join("roteiros/feitos", roteiro_selecionado))
+                        st.success(f"🎉 Vídeo gerado com sucesso: {video_path}")
+                    except Exception as e:
+                        st.error(f"Erro durante a renderização: {e}")
+                        
+                    # Limpeza de memória
+                    gc.collect()
+                else:
+                    st.error(f"❌ Falha no Fish Audio: {erro}")
+
+elif menu == "🏭 Renderização em Massa":
     st.header(menu)
     
     st.subheader("🎙️ Configuração de Áudio")
@@ -780,7 +848,7 @@ elif menu in ["🎬 Renderizador Individual", "🏭 Renderização em Massa"]:
     else:
         for r in roteiros:
             st.write(f"- {r}")
-        if st.button("🚀 Renderizar Vídeos"):
+        if st.button("🚀 Renderizar Todos os Vídeos"):
             for roteiro_file in roteiros:
                 with st.spinner(f"Renderizando {roteiro_file}..."):
                     caminho_roteiro = os.path.join("roteiros", roteiro_file)
