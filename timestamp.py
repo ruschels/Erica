@@ -499,8 +499,8 @@ elif menu == "✍️ Gerador de Roteiros (Palavras-chave)":
                         - Vá direto ao ponto técnico logo após puxar a atenção com essas expressões.
 
                         A saída DEVE ser estritamente em JSON, seguindo a estrutura abaixo.
-                        Na chave 'palavras_chave', selecione termos importantes (MÁXIMO DE 3 PALAVRAS POR TERMO) 
-                        que devem piscar na tela ao longo do vídeo para reter a atenção. 
+                        Na chave 'palavras_chave', extraia uma QUANTIDADE MASSIVA de termos importantes (MÁXIMO DE 3 PALAVRAS POR TERMO). 
+                        Eu preciso de uma ALTA DENSIDADE de palavras-chave, extraindo termos de praticamente todas as frases. O objetivo é ter muita coisa acontecendo na tela para deixar a edição extremamente dinâmica e acelerada.
                         ATENÇÃO: NUNCA coloque os conectivos conversacionais nas palavras-chave.
                         
                         - 'inicio_porcentagem': Quando a palavra aparece (0.0 a 1.0)
@@ -571,8 +571,8 @@ elif menu == "✍️ Gerador de Roteiros (Palavras-chave)":
                         - Vá direto ao ponto técnico logo após puxar a atenção com essas expressões.
 
                         A saída DEVE ser estritamente em JSON, seguindo a estrutura abaixo.
-                        Na chave 'palavras_chave', selecione termos importantes (MÁXIMO DE 3 PALAVRAS POR TERMO) 
-                        que devem piscar na tela ao longo do vídeo para reter a atenção. 
+                        Na chave 'palavras_chave', extraia uma QUANTIDADE MASSIVA de termos importantes (MÁXIMO DE 3 PALAVRAS POR TERMO). 
+                        Eu preciso de uma ALTA DENSIDADE de palavras-chave, extraindo termos de praticamente todas as frases. O objetivo é ter muita coisa acontecendo na tela para deixar a edição extremamente dinâmica e acelerada.
                         ATENÇÃO: NUNCA coloque os conectivos conversacionais nas palavras-chave.
                         
                         - 'inicio_porcentagem': Quando a palavra aparece (0.0 a 1.0)
