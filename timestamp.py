@@ -28,7 +28,8 @@ MODELO_GEMINI = "gemini-flash-latest"
 
 st.set_page_config(page_title="AutoTube Concursos", layout="wide", page_icon="📚")
 
-PASTAS = ["base_conhecimento_pdfs", "banco_de_midias", "roteiros/feitos", "output", "assets", "Fundos"]
+# Criamos a pasta 'fonts' aqui junto com as outras
+PASTAS = ["base_conhecimento_pdfs", "banco_de_midias", "roteiros/feitos", "output", "assets", "Fundos", "fonts"]
 for p in PASTAS:
     os.makedirs(p, exist_ok=True)
 
@@ -198,12 +199,13 @@ def render_keyword_video(script_data, audio_path, output_path, config_visual, de
         
         tamanho_fonte = config_visual.get('tamanho_fonte', 130)
         try:
-            # Aponta para a nova pasta "fonts" que você criou no GitHub
-            caminho_fonte = os.path.join("fonts", nome_fonte)
-            font_kw = ImageFont.truetype(caminho_fonte, tamanho_fonte)
-        except Exception as erro_fonte:
-            # Se falhar, exibe no log do Streamlit o motivo exato, em vez de falhar em silêncio
-            print(f"⚠️ Erro ao carregar a fonte {nome_fonte}: {erro_fonte}")
+            if nome_fonte == "Padrão do Sistema":
+                font_kw = ImageFont.load_default()
+            else:
+                caminho_fonte = os.path.join("fonts", nome_fonte)
+                font_kw = ImageFont.truetype(caminho_fonte, tamanho_fonte)
+        except Exception as e:
+            print(f"⚠️ Erro ao carregar a fonte {nome_fonte}: {e}")
             font_kw = ImageFont.load_default()
             
         temp_img = Image.new('RGBA', (1080, 500), (0,0,0,0))
@@ -219,7 +221,11 @@ def render_keyword_video(script_data, audio_path, output_path, config_visual, de
         while tw > 900 and tamanho_fonte > 40:
             tamanho_fonte -= 5
             try:
-                font_kw = ImageFont.truetype(nome_fonte, tamanho_fonte)
+                if nome_fonte == "Padrão do Sistema":
+                    font_kw = ImageFont.load_default()
+                else:
+                    caminho_fonte = os.path.join("fonts", nome_fonte)
+                    font_kw = ImageFont.truetype(caminho_fonte, tamanho_fonte)
                 bbox = d_temp.textbbox((0, 0), texto, font_kw)
                 tw = bbox[2] - bbox[0]
                 th = bbox[3] - bbox[1]
@@ -305,7 +311,13 @@ st.sidebar.success("✅ Chaves de API Integradas")
 
 st.sidebar.markdown("---")
 st.sidebar.header("🎨 Customização Visual")
-fonte_selecionada = st.sidebar.selectbox("Tipografia (Fonte)", ["impact.ttf", "arialbd.ttf", "courbd.ttf", "comic.ttf", "tahoma.ttf", "trebucbd.ttf"])
+
+# Lógica Dinâmica de Busca de Fontes
+fontes_disponiveis = [f for f in os.listdir("fonts") if f.lower().endswith(('.ttf', '.otf'))]
+if not fontes_disponiveis:
+    fontes_disponiveis = ["Padrão do Sistema"]
+
+fonte_selecionada = st.sidebar.selectbox("Tipografia (Fonte)", fontes_disponiveis)
 estilo_selecionado = st.sidebar.selectbox("Estilo do Design", ["Estilo 1 - Texto Glitch (Vazado)", "Estilo 2 - Caixa Cyber (Contorno)", "Estilo 3 - Bloco Sólido (Invertido)"])
 tamanho_fonte_base = st.sidebar.slider("Tamanho da Fonte", min_value=50, max_value=250, value=130, step=10)
 
