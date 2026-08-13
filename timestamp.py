@@ -198,8 +198,12 @@ def render_keyword_video(script_data, audio_path, output_path, config_visual, de
         
         tamanho_fonte = config_visual.get('tamanho_fonte', 130)
         try:
-            font_kw = ImageFont.truetype(nome_fonte, tamanho_fonte)
-        except:
+            # Aponta para a nova pasta "fonts" que você criou no GitHub
+            caminho_fonte = os.path.join("fonts", nome_fonte)
+            font_kw = ImageFont.truetype(caminho_fonte, tamanho_fonte)
+        except Exception as erro_fonte:
+            # Se falhar, exibe no log do Streamlit o motivo exato, em vez de falhar em silêncio
+            print(f"⚠️ Erro ao carregar a fonte {nome_fonte}: {erro_fonte}")
             font_kw = ImageFont.load_default()
             
         temp_img = Image.new('RGBA', (1080, 500), (0,0,0,0))
